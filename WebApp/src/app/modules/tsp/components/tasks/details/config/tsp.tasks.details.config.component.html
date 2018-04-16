@@ -1,0 +1,95 @@
+<h2 mat-dialog-title>Add Configurations for task {{taskId}}</h2>
+<mat-dialog-content>
+<div class="inline-block" style="width: 200px; height: 160px; float: left;">
+<mat-selection-list [(ngModel)]="selections">
+    <h3 matSubheader>Selection</h3>
+    <mat-list-option *ngFor="let selection of operators.selection" value="{{selection.id}}">
+        {{selection.description}}
+    </mat-list-option>
+</mat-selection-list>
+</div>
+<div class="inline-block" style="width: 280px; height: 160px; float: left;">
+<mat-selection-list [(ngModel)]="crossovers">
+    <h3 matSubheader>Crossover</h3>
+    <mat-list-option *ngFor="let crossover of operators.crossover" value="{{crossover.id}}">
+        {{crossover.description}}
+    </mat-list-option>
+</mat-selection-list>
+</div>
+<div class="inline-block" style="width: 200px; height: 160px; float: left;">
+<mat-selection-list [(ngModel)]="mutations">
+    <h3 matSubheader>Mutation</h3>
+    <mat-list-option *ngFor="let mutation of operators.mutation" value="{{mutation.id}}">
+        {{mutation.description}}
+    </mat-list-option>
+</mat-selection-list>
+</div>
+<div class="inline-block" style="width: 120px; float: left; margin-right: 15px;">
+<mat-selection-list [(ngModel)]="elitisms">
+    <h3 matSubheader>Elitism</h3>
+    <mat-list-option value="0">No</mat-list-option>
+    <mat-list-option value="1">Yes</mat-list-option>
+</mat-selection-list>
+</div>
+<div class="inline-block" style="width: 660px; float: left;">
+<mat-form-field>
+    <input name="mutationRate" matInput type="number" placeholder="Mutation Rate" step="0.01" min="0" max="1" [(ngModel)]="mutationRate">
+</mat-form-field>
+<button mat-button (click)="addMutationRate()"><mat-icon>add box</mat-icon></button>
+<mat-chip-list class="inline-block">
+    <mat-chip *ngFor="let mutationRate of mutationRates"
+        removable="true" (remove)="removeMutationRate(mutationRate)">
+        {{mutationRate}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+</mat-chip-list>
+</div>
+
+<div class="inline-block" style="width: 660px; float: left;">
+<mat-form-field>
+    <input name="populationSize" matInput type="number" placeholder="Population Size" min="1" [(ngModel)]="populationSize">
+</mat-form-field>
+<button mat-button (click)="addPopulationSize()"><mat-icon>add box</mat-icon></button>
+<mat-chip-list class="inline-block">
+    <mat-chip *ngFor="let populationSize of populationSizes"
+        removable="true" (remove)="removePopulationSize(populationSize)">
+        {{populationSize}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+</mat-chip-list>
+</div>
+
+<div class="inline-block" style="width: 660px; float: left;">
+<mat-form-field>
+    <input name="iterations" matInput type="number" placeholder="Iterations" min="1" [(ngModel)]="iteration">
+</mat-form-field>
+<button mat-button (click)="addIteration()"><mat-icon>add box</mat-icon></button>
+<mat-chip-list class="inline-block">
+    <mat-chip *ngFor="let iteration of iterations"
+        removable="true" (remove)="removeIteration(iteration)">
+        {{iteration}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+</mat-chip-list>
+</div>
+</mat-dialog-content>
+<mat-progress-bar *ngIf="sendingRequests === true" mode="query" flex></mat-progress-bar>
+<mat-divider></mat-divider>
+<mat-dialog-actions>
+    <mat-form-field>
+        <input name="runs" matInput type="number" placeholder="Runs" min="1" [(ngModel)]="runs">
+    </mat-form-field>
+    <span class="right-spacer"></span>
+    <button mat-button mat-dialog-close>Close</button>
+    <button mat-button (click)="sendAddConfigRequests()">Add Configurations</button>
+</mat-dialog-actions>
+
+
+
+<!--
+<mat-chip-list #chipList>
+    <mat-chip>Chip 1</mat-chip>
+    <mat-chip>Chip 2</mat-chip>
+  </mat-chip-list>
+  <input [matChipInputFor]="chipList">
+-->

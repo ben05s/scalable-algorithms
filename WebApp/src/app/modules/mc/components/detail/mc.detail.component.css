@@ -1,0 +1,27 @@
+.details-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+}
+  
+.mat-table {
+  overflow: auto;
+  max-height: 80%;
+}
+  
+.mat-header-cell.mat-sort-header-sorted {
+  color: black;
+}
+  
+.spacer-button {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.mat-row {
+  min-height: 30px;
+}
+
+.mat-chip {
+  margin-bottom: 8px;
+}

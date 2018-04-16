@@ -1,0 +1,157 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span style="width: 200px;">{{task.name}}</span>
+        <button *ngIf="taskProgress.taskDetails.progress <= 0 && !startDisabled" mat-button (click)="start()">Start</button>
+        <button mat-button (click)="delete()">Delete</button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-divider></mat-divider>
+
+<div class="inline-block" style="float: left">
+    <mat-card style="width: 500px; height: 545px;">
+        <mat-card-header>
+            <mat-card-title><b>Current Solution</b></mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+            <tsp-tour-diagram 
+                [cities]="task.problem.cities"
+                [tour]="taskProgress.bestTour">
+            </tsp-tour-diagram>
+            <mat-progress-bar mode="determinate" value="{{taskProgress.taskDetails.progress * 100}}"></mat-progress-bar>
+        </mat-card-content>
+    </mat-card>
+</div>
+
+<div class="inline-block" style="float: left">
+    <mat-card style="width: 100%; height: 545px;">
+        <mat-card-header>
+            <mat-card-title><b>Task Details</b></mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+            <br />
+            <mat-form-field flex>
+                <input readonly="true" name="TaskId" matInput type="number" placeholder="Task Id" [(ngModel)]="task.id">
+            </mat-form-field><br />
+            <mat-form-field>
+                <input readonly="true" name="TaskName" matInput type="string" placeholder="Task Name" [(ngModel)]="task.name">
+            </mat-form-field><br />
+            <mat-form-field>
+                <input readonly="true" name="Problem" matInput type="string" placeholder="Problem" [(ngModel)]="task.problem.name">
+            </mat-form-field><br />
+            <mat-form-field>
+                <input readonly="true" name="CurrentFitness" matInput type="number" placeholder="Current Fitness" [(ngModel)]="taskProgress.taskDetails.bestFitness">
+            </mat-form-field><br />
+            <mat-form-field>
+                <input readonly="true" name="Created" matInput type="string" placeholder="Created" [(ngModel)]="task.created">
+            </mat-form-field><br />
+            <mat-form-field *ngIf="taskProgress.taskDetails.started !== undefined && taskProgress.taskDetails.started.length > 0">
+                <input readonly="true" name="Started" matInput type="string" placeholder="Started" [(ngModel)]="taskProgress.taskDetails.started">
+            </mat-form-field><br />
+            <mat-form-field *ngIf="taskProgress.taskDetails.progress >= 1">
+                <input readonly="true" name="Completed" matInput type="string" placeholder="Completed" [(ngModel)]="taskProgress.taskDetails.completed">
+            </mat-form-field><br />
+            <mat-form-field *ngIf="taskProgress.taskDetails.started !== undefined && taskProgress.taskDetails.started.length > 0">
+                <input readonly="true" name="ComputeTime" matInput type="string" placeholder="Compute Time" [(ngModel)]="computeTime">
+            </mat-form-field><br />
+        </mat-card-content>
+    </mat-card>
+</div>
+<mat-divider></mat-divider>
+<mat-toolbar color="secondary">
+    <mat-toolbar-row>
+        <span style="width: 200px;">Configurations</span>
+        <button mat-button (click)="openAddConfigDialog()">New</button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-divider></mat-divider>
+<div style="margin: 15px">
+<mat-accordion multi="true">
+  <mat-expansion-panel disabled="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+            <span style="width: 110px;">Selection</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 200px;">Crossover</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 140px;">Mutation</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 135px;">Population</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 130px;">Iterations</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 50px">Elitism</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 120px;">Fitness</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+  </mat-expansion-panel>
+  <mat-expansion-panel *ngFor="let config of configs | sortBy: {property: 'fitness', order: 1}" >
+    <mat-expansion-panel-header [ngClass]="config.fitness === taskProgress.taskDetails.bestFitness && config.fitness < 10000 ? 'green' : ''">
+      <mat-panel-title>
+            <span style="width: 110px;">{{selectionMap.get(config.selection)}}</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 200px;">{{crossoverMap.get(config.crossover)}}</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 140px;">{{mutationMap.get(config.mutation)}} ({{config.mutationRate}})</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 135px;">Population ({{config.populationSize}})</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 130px;">Iterations ({{config.iterations}})</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span *ngIf="config.elitism" style="width: 50px">Elitism</span>
+            <span *ngIf="!config.elitism" style="width: 50px">&nbsp;</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <span style="width: 120px;">Fitness ({{precisionRound(config.fitness, 2)}})</span>
+            <mat-divider [vertical]="true"></mat-divider><span style="width: 5px;"></span>
+            <br /><mat-progress-bar
+                mode="determinate" 
+                value="{{config.progress}}" 
+                flex style="width: 250px">
+            </mat-progress-bar>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-divider></mat-divider>
+    <mat-table #table [dataSource]="config.runs">
+        <ng-container matColumnDef="Id">
+            <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
+            <mat-cell *matCellDef="let run" (click)="openRunDialog(config.id, run.id)" style="cursor: pointer">{{run.id}} </mat-cell>
+        </ng-container>
+          
+        <ng-container matColumnDef="Started">
+            <mat-header-cell *matHeaderCellDef> Started </mat-header-cell>
+            <mat-cell *matCellDef="let run"> {{run.started}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Completed">
+            <mat-header-cell *matHeaderCellDef> Completed </mat-header-cell>
+            <mat-cell *matCellDef="let run"> {{run.completed}} </mat-cell>
+        </ng-container>
+          
+        <ng-container matColumnDef="Fitness">
+            <mat-header-cell *matHeaderCellDef> Fitness </mat-header-cell>
+            <mat-cell *matCellDef="let run"> {{run.fitness}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Progress">
+            <mat-header-cell *matHeaderCellDef> Progress </mat-header-cell>
+            <mat-cell *matCellDef="let run">
+                <mat-progress-bar mode="determinate" value="{{run.progress}}"></mat-progress-bar>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Status">
+            <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+            <mat-cell *matCellDef="let run"> {{run.status}} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" 
+            [ngClass]="row.color"></mat-row>
+    </mat-table>
+
+  </mat-expansion-panel>
+</mat-accordion>
+</div>

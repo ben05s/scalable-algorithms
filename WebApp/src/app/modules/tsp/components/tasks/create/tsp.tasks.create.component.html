@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Create a new Task</h2>
+<mat-dialog-content>
+    <mat-form-field>
+        <input name="name" matInput type="text" placeholder="Name" [(ngModel)]="name">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-select name="problem" placeholder="Problem" [(ngModel)]="problemIndex">
+            <mat-option *ngFor="let problem of problems; let i = index;" 
+                        [value]="i">{{problem.name}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <tsp-tour-diagram 
+        width="400"       
+        height="400"
+        [cities]="cities"></tsp-tour-diagram>
+</mat-dialog-content>
+<mat-divider></mat-divider>
+<mat-dialog-actions>
+    <span class="right-spacer"></span>
+    <button mat-button mat-dialog-close>Close</button>
+    <button mat-button (click)="addTaskRequest()">Add Task</button>
+</mat-dialog-actions>

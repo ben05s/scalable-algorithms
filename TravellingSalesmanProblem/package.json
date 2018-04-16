@@ -1,0 +1,11 @@
+{
+    "name": "travelling-salesman-problem",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+        "build": "mvn clean install -Pdependency",
+        "build-common": "npm run build --prefix ../Common",
+        "deploy": "npm run build-common && mvn appengine:deploy"
+    },
+    "private": true
+}

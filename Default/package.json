@@ -1,0 +1,13 @@
+{
+    "name": "web-app-clc3",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+        "deploy-index": "gcloud app deploy ./index.yaml",
+        "deploy-queue": "gcloud app deploy ./queue.yaml",
+        "deploy-app": "gcloud app deploy ./app.yaml",
+        "deploy": "npm run deploy-index && npm run deploy-queue && npm run deploy-app"
+    },
+    "private": true
+  }
+  

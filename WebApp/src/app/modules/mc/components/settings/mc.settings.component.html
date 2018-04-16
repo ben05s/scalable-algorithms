@@ -1,0 +1,83 @@
+<h1 mat-dialog-title>New Monte Carlo Simulation</h1>
+<div mat-dialog-content class="settings-container">
+    <mat-form-field>
+        <input matInput placeholder="Simulation Name" [(ngModel)]="settings.name">
+    </mat-form-field>
+    <div>
+        <button mat-raised-button *ngIf="!league.teams" type="button" [ngFilePicker]="readMode" (filePick)="file=$event" class="spacer-button">
+            Select League PGN File
+        </button>
+        <button *ngIf="file && !league.teams" mat-raised-button (click)="uploadLeaguePgn(file)" color="primary" class="spacer-button">
+            Upload {{file.name}}
+        </button>
+    </div>
+
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
+    <div class="spacer-button">
+        <mat-accordion *ngIf="league.teams">
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{league.leagueName}}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        {{league.teams.length}} Teams
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <mat-list dense>
+                    <mat-list-item *ngFor="let team of league.teams">
+                        {{team.name}} {{team.playerList.length}} Players
+                    </mat-list-item>
+                </mat-list>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+    <div>
+        <button mat-raised-button type="button" [ngFilePicker]="readMode" (filePick)="fileH=$event" class="spacer-button">
+            <span *ngIf="!fileH">Select Historical Data PGN File</span>
+            <span *ngIf="fileH">{{fileH.name}}</span>
+        </button>
+    </div>       
+
+    <table class="example-full-width" cellspacing="0"><tr>
+            <td><mat-form-field>
+                    <input matInput placeholder="Number of Iterations" [(ngModel)]="settings.iterations">
+                </mat-form-field></td>
+            <td>
+                <label class="concurrent-label">Parallel Sub Iterations</label>
+                <mat-slider class="spacer-button" [max]="100" [min]="0" [step]="5" [thumb-label]="true" [(ngModel)]="settings.concurrentWorkers">
+                </mat-slider></td>
+          </tr>
+    </table>
+
+    <h3 mat-dialog-title>Prediction Settings</h3>
+    <mat-select [(ngModel)] = "settings.mcSettings.ratingSystem" placeholder="Rating System" class="spacer-big">
+        <mat-option *ngFor="let model of ratingSystems" [value]="model.id">
+            {{model.value}}
+        </mat-option>
+    </mat-select>
+    <div>
+        <mat-checkbox [(ngModel)]="settings.mcSettings.useAdvWhite">Advantage Playing White</mat-checkbox>
+        <mat-checkbox [(ngModel)]="settings.mcSettings.useStrengthTrend">Player Strength Trend</mat-checkbox>
+        <mat-checkbox [(ngModel)]="settings.mcSettings.useStats">Player White/Black Stats</mat-checkbox>
+        <mat-checkbox [(ngModel)]="settings.mcSettings.useRegularization">Regularize Ratings</mat-checkbox>
+    </div>
+    <br/>
+    <h3 mat-dialog-title>Lineup Settings</h3>
+    <div>
+        <mat-select [(ngModel)]="settings.mcSettings.optimizeLineupTeamName" placeholder="Optimized Lineup For Team" class="spacer-big">
+            <mat-option *ngFor="let team of league.teams" [value]="team.name">
+                {{team.name}}
+            </mat-option>
+        </mat-select>
+        <mat-select [(ngModel)] = "settings.mcSettings.lineupStrategy" placeholder="Lineup Strategy" class="spacer-big">
+            <mat-option *ngFor="let model of lineupStrategies" [value]="model.id">
+                {{model.value}}
+            </mat-option>
+        </mat-select>
+    </div>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="closeDialog()">Cancel</button>
+    <button mat-button [disabled]="!settings.isReady() || !file || ! fileH" (click)="addTask()" cdkFocusInitial>Add Task</button>
+</div>

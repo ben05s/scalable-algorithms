@@ -1,0 +1,16 @@
+{
+    "name": "web-api",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+        "install-pgnparser": "mvn install:install-file -Dfile=lib/pgnparser-2.3.0.jar -DgroupId=at.fh-hagenberg.clc3 -DartifactId=pgnparser -Dversion=2.3.0 -Dpackaging=jar",
+        "install-league-montecarlo-simulation": "mvn install:install-file -Dfile=lib/league-montecarlo-simulation-1.0.jar -DgroupId=at.fh-hagenberg.clc3 -DartifactId=league-montecarlo-simulation -Dversion=1.0 -Dpackaging=jar",
+        "build": "mvn clean install",
+        "build-common": "npm run build --prefix ../Common",
+        "build-montecarlo": "npm run build --prefix ../MonteCarlo",
+        "build-tsp": "npm run build --prefix ../TravellingSalesmanProblem",
+        "deploy": "npm run install-pgnparser && npm run install-league-montecarlo-simulation && npm run build-common && npm run build-montecarlo && npm run build-tsp && mvn appengine:deploy"
+    },
+    "private": true,
+    "dependencies": {}
+}

@@ -1,0 +1,27 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span style="width: 200px;">Problems</span>
+        <button mat-button (click)="openAddProblemDialog()">
+            <mat-icon>add box</mat-icon>New Problem
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-divider></mat-divider>
+<mat-spinner *ngIf="isLoading"></mat-spinner>
+
+<div *ngFor="let problem of problems" class="inline-block">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title><b>{{problem.name}}</b></mat-card-title>
+            <mat-card-subtitle>Id: {{problem.id}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+            <tsp-tour-diagram [cities]="problem.cities"></tsp-tour-diagram>
+        </mat-card-content>
+        <mat-divider></mat-divider>
+        <mat-card-actions align="end">
+            <button mat-button [routerLink]="[problem.id]">Details</button>
+        </mat-card-actions>
+    </mat-card>
+</div>

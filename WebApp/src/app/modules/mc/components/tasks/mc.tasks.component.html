@@ -1,0 +1,75 @@
+<div>
+  <button mat-raised-button (click)="openAddTaskDialog()" class="spacer-button">Add Task</button>
+  <button mat-raised-button (click)="runAllTasks()" color="primary" class="spacer-button">Run all Tasks</button>
+  <button mat-raised-button (click)="refresh()" class="spacer-button">Refresh</button>
+</div>
+<div class="example-container mat-elevation-z8">
+  <mat-table #table [dataSource]="dataSource" matSort>
+
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="iterations">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Iterations </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{numberWithCommas(element.iterations)}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="concurrentWorkers">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Sub Iterations </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.concurrentWorkers}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="useEloRating">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Elo Rating </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.useEloRating}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="state">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{varToEnumStringVal(element.status)}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="progress">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Progress </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <mat-progress-bar [value]="element.progress" mode="determinate" class="spacer-progress-bar">
+        </mat-progress-bar>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="duration">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Compute Time </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{msToTime(element.duration)}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="created">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Created </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.created | date:'d/M/yy HH:mm'}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="started">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Started </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.started | date:'d/M/yy HH:mm'}} </mat-cell>
+      </ng-container>
+
+    <ng-container matColumnDef="completed">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Completed </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.completed | date:'d/M/yy HH:mm'}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="controls">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Controls </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <button mat-raised-button (click)="openDetailTaskDialog(element)" class="spacer-button">Details</button>
+        <!-- status: 0 = created, 1 = queued, 2 = started, 3 = done, 4 = stopped, 5 = error -->
+        <button *ngIf="element.status == 0" (click)="runTask(element)" mat-raised-button color="primary" class="spacer-button">Run</button>
+        <button *ngIf="element.status == 1 || element.status == 2" (click)="stopTask(element)" mat-raised-button color="warn" class="spacer-button">Stop</button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>

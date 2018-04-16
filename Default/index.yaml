@@ -1,0 +1,6 @@
+indexes:
+- kind: TSPTaskConfigRunIteration
+  properties:
+  - name: taskConfigRun
+  - name: iteration
+    direction: desc

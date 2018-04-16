@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Run Iterations ({{runId}})</h2>
+<mat-dialog-content>
+    <tsp-tour-diagram 
+        [cities]="cities"
+        [tour]="runIteration.tour">
+    </tsp-tour-diagram>
+    <mat-form-field>
+        <input name="iteration" matInput type="number" placeholder="Iteration" [(ngModel)]="iteration">
+    </mat-form-field>
+    <mat-slider name="slider" min="1" max="{{maxIteration}}" step="1" [(ngModel)]="iteration"></mat-slider>
+</mat-dialog-content>
+<mat-divider></mat-divider>
+<mat-dialog-actions>
+    <span class="right-spacer"></span>
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

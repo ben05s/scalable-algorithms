@@ -1,0 +1,20 @@
+.mat-card {
+    width: 300px;
+    margin-top: 15px;
+    margin-left: 15px;
+    margin-right: 5px;
+    margin-bottom: 15px;
+}
+
+.red {
+    background: #fee2e2;
+}
+
+.green {
+    background: #e2fee2;
+}
+
+.mat-expansion-panel-header[aria-disabled=true] {
+    color: #000000;
+    font-weight: bold;
+}

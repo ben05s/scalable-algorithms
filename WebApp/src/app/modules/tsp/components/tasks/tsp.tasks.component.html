@@ -1,0 +1,51 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span style="width: 200px;">Tasks</span>
+        <button mat-button (click)="openAddTaskDialog()">
+            <mat-icon>add box</mat-icon>New Task
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-divider></mat-divider>
+<mat-spinner *ngIf="isLoading"></mat-spinner>
+
+<div *ngFor="let task of tasks" class="inline-block">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title><b>{{task.name}}</b></mat-card-title>
+            <mat-card-subtitle>Id: {{task.id}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+            <tsp-tour-diagram 
+                [cities]="task.problem.cities"
+                [tour]="task.bestIteration.tour"></tsp-tour-diagram>
+        </mat-card-content>
+        <mat-divider></mat-divider>
+        <mat-card-actions align="end">
+            <button mat-button [routerLink]="[task.id]">Details</button>
+        </mat-card-actions>
+    </mat-card>
+</div>
+
+<!--
+<div style="width: 300px; float: left;">
+    <tsp-tasks-list (selectedTask)="onSelectedTask($event)"></tsp-tasks-list>
+    <button mat-raised-button (click)="openAddTaskDialog()">Add New Task</button>
+</div>
+<div style="width: 400px; float: left;">
+    <tsp-tasks-configs 
+        [taskId]="selectedTaskId"
+        [taskProgress]="taskProgress"></tsp-tasks-configs>
+</div>
+<div style="width: 615px; float: left;">
+    Start Task: <button mat-raised-button (click)="startTask()">Start Task</button>
+    <br />
+    <tsp-tasks-details 
+        [taskId]="selectedTaskId" 
+        [taskProgress]="taskProgress"
+        (taskStatus)="onTaskStatusChanged($event)"
+        ></tsp-tasks-details>
+    <br />
+</div>
+-->

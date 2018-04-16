@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Create a new Problem</h2>
+<mat-dialog-content>
+        <mat-form-field style="width: 240px">
+            <input name="name" matInput type="text" placeholder="Name" [(ngModel)]="name">
+        </mat-form-field>
+        <mat-form-field style="width: 50px">
+            <input name="noOfCities" matInput type="number" placeholder="Cities" [(ngModel)]="noOfCities">
+        </mat-form-field>
+        <button mat-raised-button (click)="randomizeCities()">
+                <mat-icon>redo</mat-icon>
+        </button>
+    <tsp-tour-diagram [cities]="cities"></tsp-tour-diagram>
+</mat-dialog-content>
+<mat-divider></mat-divider>
+<mat-dialog-actions>
+    <span class="right-spacer"></span>
+    <button mat-button mat-dialog-close>Close</button>
+    <button mat-button (click)="addProblemRequest()">Add Problem</button>
+</mat-dialog-actions>

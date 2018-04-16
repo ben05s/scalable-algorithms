@@ -1,0 +1,33 @@
+<svg viewBox="0 0 1 1"
+     preserveAspectRatio="none">
+
+     <circle *ngFor="let city of normalizedCities"
+        [attr.cx]="city.x"
+        [attr.cy]="city.y"
+        r="0.007"
+        fill="#000"/>
+
+    <line 
+        *ngFor="let path of tourPath"
+        [attr.x1]="path[0].x"
+        [attr.y1]="path[0].y"
+        [attr.x2]="path[1].x"
+        [attr.y2]="path[1].y"
+        style="stroke:rgb(0,0,0);stroke-width:0.0012"/>
+</svg>
+
+
+<!--
+
+    [attr.width]="width"
+     [attr.height]="height"
+
+        <tsp-tour-diagram 
+        width="600"       
+        height="600"
+        [cities]="cities"
+        [tour]="tour">
+  cities: Point[] = [];
+  tour: number[] = [];
+    </tsp-tour-diagram>
+-->
