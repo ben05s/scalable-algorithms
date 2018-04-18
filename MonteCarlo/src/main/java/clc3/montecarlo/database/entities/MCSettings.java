@@ -1,5 +1,12 @@
 package clc3.montecarlo.database.entities;
 
+import java.util.List;
+import java.util.Map;
+
+import com.googlecode.objectify.annotation.Ignore;
+
+import at.hagenberg.master.montecarlo.simulation.ChessPredictionModel;
+
 public class MCSettings {
     private int roundsPerSeason;
     private int gamesPerMatch;
@@ -12,8 +19,36 @@ public class MCSettings {
     private int lineupStrategy;
     private String optimizeLineupTeamName;
 
-    String fileSeasonToSimulateContent;
-    String fileHistoricGamesContent;
+    @Ignore private String fileSeasonToSimulateContent;
+    @Ignore private String fileHistoricGamesContent;
+
+    private ChessPredictionModel predictionModel;
+    private List<MCTeam> teams;
+    private Map<String, List<MCHeadToHeadMatch>> roundGameResults;
+
+    public ChessPredictionModel getPredictionModel() {
+        return predictionModel;
+    }
+
+    public void setPredictionModel(ChessPredictionModel predictionModel) {
+        this.predictionModel = predictionModel;
+    }
+
+    public List<MCTeam> getTeams() { 
+        return teams;
+    }
+
+    public void setTeams(List<MCTeam> teams) { 
+        this.teams = teams; 
+    }
+
+    public Map<String, List<MCHeadToHeadMatch>> getRoundGameResults() {
+        return roundGameResults;
+    }
+
+    public void setRoundGameResults(Map<String, List<MCHeadToHeadMatch>> roundGameResults) {
+        this.roundGameResults = roundGameResults;
+    }
 
     public MCSettings() {
     }

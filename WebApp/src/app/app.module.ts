@@ -29,7 +29,7 @@ const appRoutes: Routes = [
     FormsUtilsModule,
     McModule,
     TspModule,
-    RouterModule.forRoot(appRoutes),
+    RouterModule.forRoot(appRoutes)
   ],
   exports: [
     RouterModule

@@ -55,7 +55,7 @@ export class McSettingsComponent {
 
   addTask(): void {
     this.settings.mcSettings.fileSeasonToSimulateContent = this.file.content;
-    this.settings.mcSettings.fileHistoricGamesContent = this.fileH.content;
+    if(this.fileH) this.settings.mcSettings.fileHistoricGamesContent = this.fileH.content;
     this._tasksService.addTask(this.settings).subscribe(task => {
       this.dialogRef.close(task);
     });

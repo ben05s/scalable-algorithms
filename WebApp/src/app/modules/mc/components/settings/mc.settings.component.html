@@ -1,14 +1,14 @@
-<h1 mat-dialog-title>New Monte Carlo Simulation</h1>
+<h1 mat-dialog-title>New League Simulation</h1>
 <div mat-dialog-content class="settings-container">
     <mat-form-field>
         <input matInput placeholder="Simulation Name" [(ngModel)]="settings.name">
     </mat-form-field>
     <div>
-        <button mat-raised-button *ngIf="!league.teams" type="button" [ngFilePicker]="readMode" (filePick)="file=$event" class="spacer-button">
-            Select League PGN File
+        <button mat-raised-button type="button" [ngFilePicker]="readMode" (filePick)="file=$event" class="spacer-button">
+            Select PGN File
         </button>
-        <button *ngIf="file && !league.teams" mat-raised-button (click)="uploadLeaguePgn(file)" color="primary" class="spacer-button">
-            Upload {{file.name}}
+        <button *ngIf="file" mat-raised-button (click)="uploadLeaguePgn(file)" color="primary" class="spacer-button">
+            Display Teams of {{file.name}}
         </button>
     </div>
 
@@ -32,18 +32,21 @@
             </mat-expansion-panel>
         </mat-accordion>
     </div>
-    <div>
+    <!--<div>
         <button mat-raised-button type="button" [ngFilePicker]="readMode" (filePick)="fileH=$event" class="spacer-button">
             <span *ngIf="!fileH">Select Historical Data PGN File</span>
             <span *ngIf="fileH">{{fileH.name}}</span>
         </button>
-    </div>       
+    </div>-->    
 
     <table class="example-full-width" cellspacing="0"><tr>
             <td><mat-form-field>
-                    <input matInput placeholder="Number of Iterations" [(ngModel)]="settings.iterations">
+                    <input matInput placeholder="Rounds To Simulate" [(ngModel)]="settings.mcSettings.roundsToSimulate">
                 </mat-form-field></td>
-            <td>
+            <td><mat-form-field>
+                    <input matInput placeholder="Number of Iterations" [(ngModel)]="settings.iterations">
+                </mat-form-field></td></tr><tr>
+            <td colspan="2">
                 <label class="concurrent-label">Parallel Sub Iterations</label>
                 <mat-slider class="spacer-button" [max]="100" [min]="0" [step]="5" [thumb-label]="true" [(ngModel)]="settings.concurrentWorkers">
                 </mat-slider></td>
@@ -79,5 +82,5 @@
 </div>
 <div mat-dialog-actions>
     <button mat-button (click)="closeDialog()">Cancel</button>
-    <button mat-button [disabled]="!settings.isReady() || !file || ! fileH" (click)="addTask()" cdkFocusInitial>Add Task</button>
+    <button mat-button [disabled]="!settings.isReady() || !file" (click)="addTask()" cdkFocusInitial>Add Task</button>
 </div>

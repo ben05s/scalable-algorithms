@@ -8,7 +8,7 @@ export class McTaskSettings {
     mcSettings: McSettings;
 
     constructor() {
-        this.name = "";
+        this.name = "League Simulation";
         this.iterations = 1000;
         this.concurrentWorkers = 4;
         this.mcSettings = new McSettings();
