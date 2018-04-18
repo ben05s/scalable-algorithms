@@ -16,18 +16,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.googlecode.objectify.Key;
 
+import org.apache.commons.math3.random.RandomGenerator;
+import org.apache.commons.math3.random.Well19937c;
+
 import at.hagenberg.master.montecarlo.PgnAnalysis;
-import at.hagenberg.master.montecarlo.entities.SeasonResult;
-import at.hagenberg.master.montecarlo.entities.SeasonScore;
-import at.hagenberg.master.montecarlo.entities.Team;
-import at.hagenberg.master.montecarlo.entities.TeamResult;
-import at.hagenberg.master.montecarlo.exceptions.ChessMonteCarloSimulationException;
-import at.hagenberg.master.montecarlo.simulation.ChessGame;
+import at.hagenberg.master.montecarlo.entities.*;
+import at.hagenberg.master.montecarlo.entities.enums.LineupStrategy;
+import at.hagenberg.master.montecarlo.exceptions.PgnParserException;
+import at.hagenberg.master.montecarlo.simulation.ChessLeagueSimulation;
 import at.hagenberg.master.montecarlo.simulation.ChessPredictionModel;
-import at.hagenberg.master.montecarlo.simulation.MonteCarloSimulation;
-import at.hagenberg.master.montecarlo.simulation.settings.ChessLineupSettings;
-import at.hagenberg.master.montecarlo.simulation.settings.MonteCarloSettings;
-import at.hagenberg.master.montecarlo.simulation.settings.SeasonSettings;
+import at.hagenberg.master.montecarlo.simulation.LineupSelector;
+import at.hagenberg.master.montecarlo.simulation.settings.ChessLeagueSettings;
 
 import java.util.*;
 
@@ -55,25 +54,22 @@ public class ProcessServlet extends BaseServlet {
         try {
             MCSettings mcSettings = task.getMCSettings();
 
-            SeasonSettings seasonSettings = new SeasonSettings(mcSettings.getRoundsPerSeason(), mcSettings.getGamesPerMatch(), mcSettings.getRoundsToSimulate());
+            RandomGenerator randomGenerator = new Well19937c();
+            final int gamesPerMatch = mcSettings.getGamesPerMatch();
+            final int roundsPerSeason = mcSettings.getRoundsPerSeason();
+            final int roundsToSimulate = mcSettings.getRoundsToSimulate();
+            LineupSelector lineupSelector = new LineupSelector(LineupStrategy.valueOf(mcSettings.getLineupStrategy()), gamesPerMatch);
             ChessPredictionModel predictionModel = new ChessPredictionModel(mcSettings.isUseAdvWhite(), mcSettings.isUseStrengthTrend(), mcSettings.isUseStats(), mcSettings.isUseRegularization());
+
+            PgnAnalysis analysis = new PgnAnalysis(mcSettings.getFileSeasonToSimulateContent(), mcSettings.getFileHistoricGamesContent(), roundsPerSeason, gamesPerMatch);
+            List<Team> teamList = analysis.getTeams();
+            predictionModel.setStatistics(analysis);
+            analysis.fillGamesFromSeasonToSimulate(randomGenerator, predictionModel);
+
+            ChessLeagueSettings settings = new ChessLeagueSettings(predictionModel, teamList, analysis.getRoundGameResults(),
+                    roundsPerSeason, roundsToSimulate, gamesPerMatch, lineupSelector);
             
-            List<Team> teams = null;
-            Map<Integer, List<ChessGame>> roundGameResults = null;
-            try{
-                PgnAnalysis analysis = new PgnAnalysis(seasonSettings, mcSettings.getFileSeasonToSimulateContent(), mcSettings.getFileHistoricGamesContent());
-                teams = analysis.getTeams();
-                teams = predictionModel.regularizePlayerRatingsForTeams(teams);
-                roundGameResults = analysis.getRoundGameResults();
-                predictionModel.setStatistics(analysis);
-            } catch(ChessMonteCarloSimulationException e) {
-                throw new ServletException("Error processing PGNs");
-            }
-            
-            ChessLineupSettings lineupSettings = new ChessLineupSettings(mcSettings.getLineupStrategy(), mcSettings.getOptimizeLineupTeamName());
-            MonteCarloSettings monteCarloSettings = new MonteCarloSettings(seasonSettings, predictionModel, lineupSettings);
-            
-            MonteCarloSimulation simulation = new MonteCarloSimulation(monteCarloSettings, teams, roundGameResults);
+            ChessLeagueSimulation simulation = new ChessLeagueSimulation(randomGenerator, settings);
             for(Long i = iterationStart; i < iterationEnd; i++) {
                 SeasonResult result = simulation.runSimulation();
                 MCTaskIteration mcIteration = saveIteration(i.intValue(), result, task.getKey());
@@ -82,7 +78,7 @@ public class ProcessServlet extends BaseServlet {
 
             saveResult(iterations, task.getKey(), start, iterationStart.intValue(), iterationEnd.intValue());
             response.setStatus(200); // sets the queue task to done
-        } catch(Exception|ChessMonteCarloSimulationException e) {
+        } catch(Exception|PgnParserException e) {
             e.printStackTrace();
             task.setStatus(TaskStatus.ERROR);
             response.setStatus(404);
@@ -108,7 +104,7 @@ public class ProcessServlet extends BaseServlet {
         int iterationStart, int iterationEnd) {
         MCTaskResult taskResult = new MCTaskResult();
 
-        Map<String, TeamResult> teamResultMap = new HashMap<>();
+        Map<String, TeamSimulationResult> teamResultMap = new HashMap<>();
         int totalIterations = iterations.size();
         for (MCTaskIteration iteration : iterations) {
             Map<String, SeasonScore> teamMap = iteration.getSeasonResult().getTeamSeasonScoreMap();
@@ -117,11 +113,12 @@ public class ProcessServlet extends BaseServlet {
             // promoted team
             if(itTeam.hasNext()) {
                 Map.Entry<String, SeasonScore> entry = itTeam.next();
-                TeamResult teamResult = teamResultMap.get(entry.getKey());
+                TeamSimulationResult teamResult = teamResultMap.get(entry.getKey());
                 if(teamResult == null) {
-                    teamResult = new TeamResult(entry.getKey(), totalIterations);
+                    teamResult = new TeamSimulationResult(entry.getKey(), totalIterations);
                 }
-                teamResult.addPointsScored(entry.getValue().getPointsScored());
+                teamResult.addPoints(new Double(entry.getValue().getSeasonPoints()).intValue());
+                teamResult.addScore(entry.getValue().getPointsScored());
                 teamResult.addPromotion();
                 teamResult.setIterationStart(iterationStart);
                 teamResult.setIterationEnd(iterationEnd);
@@ -133,11 +130,12 @@ public class ProcessServlet extends BaseServlet {
             while(itTeam.hasNext()) {
                 count++;
                 Map.Entry<String, SeasonScore> entry = itTeam.next();
-                TeamResult teamResult = teamResultMap.get(entry.getKey());
+                TeamSimulationResult teamResult = teamResultMap.get(entry.getKey());
                 if(teamResult == null) {
-                    teamResult = new TeamResult(entry.getKey(), totalIterations);
+                    teamResult = new TeamSimulationResult(entry.getKey(), totalIterations);
                 }
-                teamResult.addPointsScored(entry.getValue().getPointsScored());
+                teamResult.addPoints(new Double(entry.getValue().getSeasonPoints()).intValue());
+                teamResult.addScore(entry.getValue().getPointsScored());
                 teamResult.setIterationStart(iterationStart);
                 teamResult.setIterationEnd(iterationEnd);
                 
@@ -146,7 +144,7 @@ public class ProcessServlet extends BaseServlet {
                 teamResultMap.put(entry.getKey(), teamResult);
             }
         }
-        List<TeamResult> teamResults = new ArrayList<>(teamResultMap.values());
+        List<TeamSimulationResult> teamResults = new ArrayList<>(teamResultMap.values());
     
         taskResult.setMcTask(taskKey);
         taskResult.setTeamResults(teamResults);

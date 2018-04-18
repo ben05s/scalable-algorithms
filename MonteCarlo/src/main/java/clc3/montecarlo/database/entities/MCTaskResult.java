@@ -6,7 +6,7 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
-import at.hagenberg.master.montecarlo.entities.TeamResult;
+import at.hagenberg.master.montecarlo.entities.TeamSimulationResult;
 
 import com.googlecode.objectify.Key;
 
@@ -16,7 +16,7 @@ public class MCTaskResult {
     Long id;
     @Index
     Key<MCTask> mcTask;
-    List<TeamResult> teamResults;
+    List<TeamSimulationResult> teamResults;
     int calculatedIterations;
     List<Long> computeTimes;
 
@@ -43,11 +43,11 @@ public class MCTaskResult {
         this.mcTask = mcTask;
     }
 
-    public List<TeamResult> getTeamResults() {
+    public List<TeamSimulationResult> getTeamResults() {
         return teamResults;
     }
 
-    public void setTeamResults(List<TeamResult> teamResults) {
+    public void setTeamResults(List<TeamSimulationResult> teamResults) {
         this.teamResults = teamResults;
     }
 

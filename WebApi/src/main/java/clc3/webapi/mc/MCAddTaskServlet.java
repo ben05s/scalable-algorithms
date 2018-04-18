@@ -10,15 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import at.hagenberg.master.montecarlo.PgnAnalysis;
-import at.hagenberg.master.montecarlo.entities.Team;
-import at.hagenberg.master.montecarlo.exceptions.ChessMonteCarloSimulationException;
-import at.hagenberg.master.montecarlo.simulation.ChessGame;
-import at.hagenberg.master.montecarlo.simulation.ChessPredictionModel;
-import at.hagenberg.master.montecarlo.simulation.settings.ChessLineupSettings;
-import at.hagenberg.master.montecarlo.simulation.settings.MonteCarloSettings;
-import at.hagenberg.master.montecarlo.simulation.settings.SeasonSettings;
-
 import java.io.IOException;
 import java.util.*;
 

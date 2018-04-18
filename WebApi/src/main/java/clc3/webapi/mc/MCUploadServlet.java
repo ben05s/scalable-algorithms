@@ -53,11 +53,10 @@ public class MCUploadServlet extends BaseServlet {
 
             Team whiteTeam = teamMap.get(game.getWhiteTeam());
             if(whiteTeam == null) {
-                whiteTeam = new Team(game.getWhiteTeam(), 0);
+                whiteTeam = new Team(game.getWhiteTeam());
             }
             
-            Player whitePlayer = new Player();
-            whitePlayer.setName(game.getWhite());
+            Player whitePlayer = new Player(game.getWhite());
             whitePlayer.setElo(Integer.parseInt(game.getWhiteElo()));
 
             if(!whiteTeam.getPlayerList().contains(whitePlayer))
@@ -67,11 +66,10 @@ public class MCUploadServlet extends BaseServlet {
 
             Team blackTeam = teamMap.get(game.getBlackTeam());
             if(blackTeam == null) {
-                blackTeam = new Team(game.getBlackTeam(), 0);
+                blackTeam = new Team(game.getBlackTeam());
             }
 
-            Player blackPlayer = new Player();
-            blackPlayer.setName(game.getBlack());
+            Player blackPlayer = new Player(game.getBlack());
             blackPlayer.setElo(Integer.parseInt(game.getBlackElo()));
 
             if(!blackTeam.getPlayerList().contains(blackPlayer))

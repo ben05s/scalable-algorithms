@@ -2,11 +2,11 @@ package clc3.webapi.mc.responses;
 
 import java.util.*;
 
-import at.hagenberg.master.montecarlo.entities.TeamResult;
+import at.hagenberg.master.montecarlo.entities.TeamSimulationResult;
 import clc3.montecarlo.database.entities.MCTaskResult;
 
 public class MCTaskResultResponse {
-    List<TeamResult> teamResults;
+    List<TeamSimulationResult> teamResults;
     int calculatedIterations;
     List<Long> computeTimes;
     
@@ -18,11 +18,11 @@ public class MCTaskResultResponse {
         this.computeTimes = taskResult.getComputeTimes();
     }
 
-    public List<TeamResult> getTeamResults() {
+    public List<TeamSimulationResult> getTeamResults() {
         return teamResults;
     }
 
-    public void setTeamResults(List<TeamResult> teamResults) {
+    public void setTeamResults(List<TeamSimulationResult> teamResults) {
         this.teamResults = teamResults;
     }
 
