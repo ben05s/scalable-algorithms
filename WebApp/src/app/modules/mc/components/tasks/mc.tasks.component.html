@@ -18,13 +18,8 @@
     </ng-container>
 
     <ng-container matColumnDef="concurrentWorkers">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Sub Iterations </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Parallel Tasks </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element.concurrentWorkers}} </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="useEloRating">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Elo Rating </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.useEloRating}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="state">

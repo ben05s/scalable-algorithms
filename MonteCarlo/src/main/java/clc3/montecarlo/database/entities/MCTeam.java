@@ -1,12 +1,7 @@
 package clc3.montecarlo.database.entities;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import com.googlecode.objectify.annotation.Ignore;
-
-import at.hagenberg.master.montecarlo.PgnAnalysis;
 import at.hagenberg.master.montecarlo.entities.Player;
 import at.hagenberg.master.montecarlo.entities.Team;
 

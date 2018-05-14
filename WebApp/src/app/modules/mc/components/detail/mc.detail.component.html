@@ -5,10 +5,10 @@
       {{task.name}}
     </mat-chip>
     <mat-chip>
-      Iterations: {{currentIterations}}/{{task.iterations}}
+      Iterations: {{numberWithCommas(currentIterations)}}/{{numberWithCommas(task.iterations)}}
     </mat-chip>
     <mat-chip>
-      Sub Iteration Size: {{iterationsPerWorker}}
+      Iterations per Task: {{numberWithCommas(iterationsPerWorker)}}
     </mat-chip>
   </mat-chip-list>
   <mat-chip-list>
@@ -42,7 +42,7 @@
 
       <ng-container matColumnDef="totalPromotions">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Total Promotions </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.totalPromotions}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{numberWithCommas(element.totalPromotions)}} </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="ratioRelegation">
@@ -52,22 +52,17 @@
 
       <ng-container matColumnDef="totalRelegations">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Total Relegations </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.totalRelegations}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{numberWithCommas(element.totalRelegations)}} </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="highestSeasonScore">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Highest Season Score</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.highestSeasonScore}} </mat-cell>
+      <ng-container matColumnDef="totalMatchPoints">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Total Match Points </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{numberWithCommas(element.totalPoints)}} </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="lowestSeasonScore">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Lowest Season Score</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.lowestSeasonScore}} </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="totalPoints">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Total Points </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.totalPoints}} </mat-cell>
+      <ng-container matColumnDef="totalGamePoints">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Total Game Points </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{numberWithCommas(element.totalScore)}} </mat-cell>
       </ng-container>
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>

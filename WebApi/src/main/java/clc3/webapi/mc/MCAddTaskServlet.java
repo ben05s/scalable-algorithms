@@ -10,7 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
@@ -18,10 +17,10 @@ import com.google.cloud.storage.StorageOptions;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
 
-import at.hagenberg.master.montecarlo.PgnAnalysis;
+import at.hagenberg.master.montecarlo.parser.PgnAnalysis;
 import at.hagenberg.master.montecarlo.entities.Team;
 import at.hagenberg.master.montecarlo.exceptions.PgnParserException;
-import at.hagenberg.master.montecarlo.simulation.ChessPredictionModel;
+import at.hagenberg.master.montecarlo.prediction.ChessPredictionModel;
 import at.hagenberg.master.montecarlo.simulation.HeadToHeadMatch;
 
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class MCAddTaskServlet extends BaseServlet {
         MCSettings settings = req.getMCSettings();
 
         RandomGenerator randomGenerator = new Well19937c();
-        ChessPredictionModel predictionModel = new ChessPredictionModel(settings.isUseAdvWhite(), settings.isUseStrengthTrend(), settings.isUseStats(), settings.isUseRegularization());
+        ChessPredictionModel predictionModel = new ChessPredictionModel(settings.isUseEloRating(), settings.isUseAdvWhite(), settings.isUseStrengthTrend(), settings.isUseStats(), settings.isUseRegularization());
 
         BlobId blobId = BlobId.of("clc3-project-benjamin.appspot.com", "historicData.pgn");
         byte[] content = storage.readAllBytes(blobId);
@@ -78,24 +77,26 @@ public class MCAddTaskServlet extends BaseServlet {
             mcTeams.add(new MCTeam(teams.get(i), settings.getGamesPerMatch()));
         }
 
-        settings.setTeams(mcTeams);
+        //settings.setTeams(mcTeams);
 
-        Map<String, List<MCHeadToHeadMatch>> newMap = new HashMap<>();
+        Map<String, List<MCHeadToHeadMatch>> rounds = new HashMap<>();
         for(Map.Entry<Integer, List<HeadToHeadMatch>> entry : analysis.getRoundGameResults().entrySet()) {
             List<MCHeadToHeadMatch> list = new ArrayList<>();
             for (int i = 0; i < entry.getValue().size(); i++) {
                 list.add(new MCHeadToHeadMatch(entry.getValue().get(i)));
             }
-            newMap.put(entry.getKey().toString(), list);
+            rounds.put(entry.getKey().toString(), list);
         }
 
-        settings.setRoundGameResults(newMap);
+        //settings.setRoundGameResults(rounds);
 
         MCTask mc = new MCTask();
         mc.setName(req.getName());
         mc.setIterations(req.getIterations());
         mc.setConcurrentWorkers(req.getConcurrentWorkers());
         mc.setMCSettings(settings);
+        mc.setTeams(mcTeams);
+        mc.setRoundGameResults(rounds);
         mc.setCreated(new Date());
         mc.setQueueTaskNames(new ArrayList<String>());
 

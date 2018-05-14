@@ -16,8 +16,7 @@ import { AfterViewInit } from '@angular/core/src/metadata/lifecycle_hooks';
 })
 export class McDetailComponent {
 
-  displayedColumns = ['teamName', 'ratioPromotion', 'totalPromotions', 'ratioRelegation',
-    'totalRelegations', 'highestSeasonScore', 'lowestSeasonScore', 'totalPoints'];
+  displayedColumns = ['teamName', 'ratioPromotion', 'totalPromotions', 'ratioRelegation', 'totalRelegations', 'totalMatchPoints', 'totalGamePoints'];
   dataSource = new MatTableDataSource<TeamResult>();
 
   @ViewChild(MatSort) sort: MatSort;
@@ -50,9 +49,11 @@ export class McDetailComponent {
 
       this.iterationsPerWorker = ((this.task.iterations)/this.task.concurrentWorkers).toFixed(0);
       this.currentIterations = taskResult.calculatedIterations;
-      if(this.task.started) {
-        this.runTime = this.task.completed ? this.task.completed.valueOf() - this.task.started.valueOf() : new Date().valueOf() - this.task.started.valueOf();
+
+      if(this.task.started != null) {
+        this.runTime = this.task.completed != null ? this.task.completed.valueOf() - this.task.started.valueOf() : new Date().valueOf() - this.task.started.valueOf();
       }
+      
       if(taskResult.computeTimes) {
         this.computeTime = taskResult.computeTimes.reduce(reducer);
         this.minComputeTime = Math.min(...taskResult.computeTimes);
@@ -79,5 +80,9 @@ export class McDetailComponent {
     if (seconds >= 1) timeStr += seconds.toFixed(0) + "s ";
     timeStr += milliseconds.toFixed(0) + "ms";
     return timeStr;
+  }
+
+  numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 }

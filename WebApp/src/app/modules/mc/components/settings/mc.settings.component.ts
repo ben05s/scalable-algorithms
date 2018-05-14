@@ -25,11 +25,6 @@ export class McSettingsComponent {
   league: League = new League();
   task: McTask;
 
-  ratingSystems = [
-    {value: 'ELO', id: 1},
-    {value: 'Other', id: 2}
-  ];
-
   lineupStrategies = [
     {value: 'Avoid Strong Opponents', id: 1},
     {value: 'Match Strong Opponents', id: 2},

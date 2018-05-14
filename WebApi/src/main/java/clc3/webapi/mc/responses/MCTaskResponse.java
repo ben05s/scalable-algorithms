@@ -11,9 +11,9 @@ public class MCTaskResponse {
     int concurrentWorkers;
     MCSettings mcSettings;
     int status;
-    Date created;
-    Date started;
-    Date completed;
+    Long created;
+    Long started;
+    Long completed;
     long duration;
 
     public MCTaskResponse() {
@@ -24,11 +24,11 @@ public class MCTaskResponse {
         this.name = task.getName();
         this.iterations = task.getIterations();
         this.concurrentWorkers = task.getConcurrentWorkers();
-        // this.mcSettings = task.getMCSettings();
+        this.mcSettings = task.getMCSettings();
         this.status = task.getStatus();
-        this.created = task.getCreated();
-        this.started = task.getStarted();
-        this.completed = task.getCompleted();
+        this.created = task.getCreated() != null ? task.getCreated().getTime() : null;
+        this.started = task.getStarted() != null ? task.getStarted().getTime() : null;
+        this.completed = task.getCompleted() != null ? task.getCompleted().getTime() : null;
         this.duration = task.getDuration();
     }
 
@@ -80,27 +80,27 @@ public class MCTaskResponse {
         this.status = status;
     }
 
-    public Date getCreated() {
+    public Long getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(Long created) {
         this.created = created;
     }
 
-    public Date getStarted() {
+    public Long getStarted() {
         return started;
     }
 
-    public void setStarted(Date started) {
+    public void setStarted(Long started) {
         this.started = started;
     }
 
-    public Date getCompleted() {
+    public Long getCompleted() {
         return completed;
     }
 
-    public void setCompleted(Date completed) {
+    public void setCompleted(Long completed) {
         this.completed = completed;
     }
 

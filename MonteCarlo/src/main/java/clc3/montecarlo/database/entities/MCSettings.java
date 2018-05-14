@@ -5,13 +5,13 @@ import java.util.Map;
 
 import com.googlecode.objectify.annotation.Ignore;
 
-import at.hagenberg.master.montecarlo.simulation.ChessPredictionModel;
+import at.hagenberg.master.montecarlo.prediction.ChessPredictionModel;
 
 public class MCSettings {
     private int roundsPerSeason;
     private int gamesPerMatch;
     private int roundsToSimulate;
-    private int ratingSystem;
+    private boolean useEloRating;
     private boolean useAdvWhite;
     private boolean useStrengthTrend;
     private boolean useStats;
@@ -77,12 +77,12 @@ public class MCSettings {
         this.roundsToSimulate = roundsToSimulate;
     }
 
-    public int getRatingSystem() {
-        return ratingSystem;
+    public boolean isUseEloRating() {
+        return useEloRating;
     }
 
-    public void setRatingSystem(int ratingSystem) {
-        this.ratingSystem = ratingSystem;
+    public void setUseEloRating(boolean useEloRating) {
+        this.useEloRating = useEloRating;
     }
 
     public boolean isUseAdvWhite() {

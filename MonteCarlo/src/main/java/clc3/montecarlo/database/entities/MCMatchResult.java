@@ -10,8 +10,8 @@ import com.googlecode.objectify.annotation.Ignore;
 
 public class MCMatchResult {
 
-    private Player opponentA;
-    private Player opponentB;
+    private MCPlayer opponentA;
+    private MCPlayer opponentB;
     private double scoreA;
     private double scoreB;
 
@@ -23,8 +23,8 @@ public class MCMatchResult {
     }
 
     public MCMatchResult(MatchResult result) {
-        this.opponentA = (Player) result.getOpponentA();
-        this.opponentB = (Player) result.getOpponentB();
+        this.opponentA = new MCPlayer((Player) result.getOpponentA());
+        this.opponentB = new MCPlayer((Player) result.getOpponentB());
         this.scoreA = result.getScoreA();
         this.scoreB = result.getScoreB();
         this.winner = (Player) result.getWinner();
@@ -39,11 +39,11 @@ public class MCMatchResult {
         return Math.abs(scoreA - scoreB);
     }
  
-    public Player getOpponentA() {
+    public MCPlayer getOpponentA() {
         return opponentA;
     }
 
-    public Player getOpponentB() {
+    public MCPlayer getOpponentB() {
         return opponentB;
     }
 

@@ -1,11 +1,12 @@
 import { Team } from './Team';
+import { McSettings } from './McSettings';
 
 export class McTask {
     id: number;
     name: string;
     iterations: number;
     concurrentWorkers: number;
-    useEloRating: boolean;
+    mcSettings: McSettings;
     teams: Team[];
     status: number;
     progress: number = 0.0;

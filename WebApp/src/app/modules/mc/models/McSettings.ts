@@ -2,7 +2,7 @@ export class McSettings {
     roundsPerSeason: number;
     gamesPerMatch: number;
     roundsToSimulate: number;
-    ratingSystem: number;
+    useEloRating: boolean;
     useAdvWhite: boolean;
     useStrengthTrend: boolean;
     useStats: boolean;
@@ -17,7 +17,7 @@ export class McSettings {
         this.roundsPerSeason = 11;
         this.gamesPerMatch = 6;
         this.roundsToSimulate = 11;
-        this.ratingSystem = 1;
+        this.useEloRating = false;
         this.useAdvWhite = false;
         this.useStrengthTrend = false;
         this.useStats = false;
@@ -28,6 +28,6 @@ export class McSettings {
         this.fileHistoricGamesContent = "";
     }
     isComplete() {
-        return this.ratingSystem != 0 && this.lineupStrategy != 0;
+        return this.lineupStrategy != 0;
     }
 }

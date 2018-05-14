@@ -17,6 +17,8 @@ public class MCTask {
     int iterations;
     int concurrentWorkers;
     MCSettings mcSettings;
+    List<MCTeam> teams;
+    Map<String, List<MCHeadToHeadMatch>> roundGameResults;
     int status;
     @Index
     Date created;
@@ -71,6 +73,22 @@ public class MCTask {
 
     public void setMCSettings(MCSettings mcSettings) {
         this.mcSettings = mcSettings;
+    }
+
+    public List<MCTeam> getTeams() { 
+        return teams;
+    }
+
+    public void setTeams(List<MCTeam> teams) { 
+        this.teams = teams; 
+    }
+
+    public Map<String, List<MCHeadToHeadMatch>> getRoundGameResults() {
+        return roundGameResults;
+    }
+
+    public void setRoundGameResults(Map<String, List<MCHeadToHeadMatch>> roundGameResults) {
+        this.roundGameResults = roundGameResults;
     }
 
     public List<String> getQueueTaskNames() {

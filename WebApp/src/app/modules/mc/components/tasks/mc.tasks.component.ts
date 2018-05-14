@@ -25,7 +25,7 @@ export class McTasksComponent implements OnInit, OnDestroy {
     progressTimerInterval: number = 10000;
     progressTimerSubscriptions: Map<number, Subscription> = new Map<number, Subscription>();
 
-    displayedColumns = ['name', 'iterations', 'concurrentWorkers', 'useEloRating', 'created', 'started', 'completed', 'duration', 'progress', 'state', 'controls'];
+    displayedColumns = ['name', 'iterations', 'concurrentWorkers', 'created', 'started', 'completed', 'duration', 'progress', 'state', 'controls'];
     dataSource: TasksDataSource;
 
     tasks: McTask[];
@@ -122,7 +122,7 @@ export class McTasksComponent implements OnInit, OnDestroy {
 
     openDetailTaskDialog(task: McTask): void {
         let dialogRef = this.dialogDetailTask.open(McDetailComponent, {
-            width: '90%',
+            width: '60%',
             data: task
         });
 
@@ -184,6 +184,6 @@ export class McTasksComponent implements OnInit, OnDestroy {
       }
 
       numberWithCommas = (x) => {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       }
 }
