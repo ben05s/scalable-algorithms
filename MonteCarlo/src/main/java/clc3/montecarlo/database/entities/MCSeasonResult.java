@@ -8,9 +8,13 @@ import at.hagenberg.master.montecarlo.entities.SeasonScore;
 
 public class MCSeasonResult {
     private Map<String, SeasonScore> teamSeasonScoreMap = new HashMap<>();
+    private double promotionError = 0.0;
+    private double relegationError = 0.0;
 
     public MCSeasonResult(SeasonResult seasonResult) {
         this.teamSeasonScoreMap = seasonResult.getTeamSeasonScoreMap();
+        this.promotionError = seasonResult.getPromotionError();
+        this.relegationError = seasonResult.getRelegationError();
     }
 
     public Map<String, SeasonScore> getTeamSeasonScoreMap() {
@@ -19,5 +23,21 @@ public class MCSeasonResult {
 
     public void setTeamSeasonScoreMap(Map<String, SeasonScore> teamSeasonScoreMap) {
         this.teamSeasonScoreMap = teamSeasonScoreMap;
+    }
+
+    public double getPromotionError() {
+        return promotionError;
+    }
+
+    public void setPromotionError(double promotionError) {
+        this.promotionError = promotionError;
+    }
+
+    public double getRelegationError() {
+        return relegationError;
+    }
+
+    public void setRelegationError(double relegationError) {
+        this.relegationError = relegationError;
     }
 }

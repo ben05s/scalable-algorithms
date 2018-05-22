@@ -95,7 +95,7 @@ public class ProcessServlet extends BaseServlet {
                 List<HeadToHeadMatch> list = new ArrayList<>();
                 for (int i = 0; i < entry.getValue().size(); i++) {
                     MCHeadToHeadMatch mcHeadToHeadMatch = entry.getValue().get(i);
-                    GameResult gameResult = GameResult.valueOf(new Double(mcHeadToHeadMatch.getMatchResult().getAbsoluteScore()));
+                    GameResult gameResult = GameResult.valueOf(new Double(mcHeadToHeadMatch.getMatchResult().getScoreA()));
                     Player a = new Player(mcHeadToHeadMatch.getOpponentA().getName());
                     a.setTeamName(mcHeadToHeadMatch.getOpponentA().getTeamName());
                     a.setElo(mcHeadToHeadMatch.getOpponentA().getElo());
@@ -110,9 +110,19 @@ public class ProcessServlet extends BaseServlet {
 
             LeagueSettings<Team> settings = new LeagueSettings<Team>(predictionModel, teamList, roundsPerSeason, new RandomSelection(randomGenerator, gamesPerMatch, true), roundsToSimulate, roundGameResults);
             
-            ChessLeagueSimulation simulation = new ChessLeagueSimulation(randomGenerator, settings);
+            // create actual season result - to measure the error
+            List<String> actualTeamResult = new ArrayList<>();
+            settings.setRoundsToSimulate(0);
+            ChessLeagueSimulation pseudo = new ChessLeagueSimulation(randomGenerator, settings);
+            SeasonResult actualResult = pseudo.runSimulation();
+            actualTeamResult.addAll(actualResult.getTeamSeasonScoreMap().keySet());
+            actualTeamResult.forEach(s -> System.out.println(s));
+
+            settings.setRoundsToSimulate(roundsToSimulate);
+            ChessLeagueSimulation simulation = new ChessLeagueSimulation(randomGenerator, settings, actualTeamResult);
             for(Long i = iterationStart; i < iterationEnd; i++) {
                 SeasonResult result = simulation.runSimulation();
+                result.getTeamSeasonScoreMap().entrySet().forEach(s -> System.out.println(s));
                 MCTaskIteration mcIteration = saveIteration(i.intValue(), result, task.getKey());
                 iterations.add(mcIteration);
             }
@@ -147,6 +157,9 @@ public class ProcessServlet extends BaseServlet {
 
         Map<String, TeamSimulationResult> teamResultMap = new HashMap<>();
         int totalIterations = iterations.size();
+        double promotionErrorSum = 0.0;
+        double relegationErrorSum = 0.0;
+        
         for (MCTaskIteration iteration : iterations) {
             Map<String, SeasonScore> teamMap = iteration.getSeasonResult().getTeamSeasonScoreMap();
             Iterator<Map.Entry<String, SeasonScore>> itTeam = teamMap.entrySet().iterator();
@@ -184,11 +197,15 @@ public class ProcessServlet extends BaseServlet {
                 if(count == teamMap.size()) teamResult.addRelegation();
                 teamResultMap.put(entry.getKey(), teamResult);
             }
+            promotionErrorSum += iteration.getSeasonResult().getPromotionError();
+            relegationErrorSum += iteration.getSeasonResult().getRelegationError();
         }
         List<TeamSimulationResult> teamResults = new ArrayList<>(teamResultMap.values());
 
         taskResult.setMcTask(taskKey);
         taskResult.setTeamResults(teamResults);
+        taskResult.setPromotionRMSE(Math.sqrt(promotionErrorSum / (double) iterations.size()));
+        taskResult.setRelegationRMSE(Math.sqrt(relegationErrorSum / (double) iterations.size()));
         taskResult.setCacluatedIterations(totalIterations);
         taskResult.setComputeTimes(Arrays.asList(System.currentTimeMillis() - start));
         taskResultDao.save(taskResult);

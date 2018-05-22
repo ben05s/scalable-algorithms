@@ -112,8 +112,8 @@ public class MCAddTaskServlet extends BaseServlet {
         String bucketName = "clc3-project-benjamin.appspot.com";
         String fileName = "simulation-results-promotion-" + mc.getName() + ".csv";
         String fileName2 = "simulation-results-relegation-" + mc.getName() + ".csv";
-        String header = teams.stream().sorted(Comparator.comparing(Team::getName)).map(t -> t.getName()).collect(Collectors.joining(";")) + ";iterations\n";
-        header += teams.stream().map(t -> "0").collect(Collectors.joining(";")) + ";0\n";
+        String header = teams.stream().sorted(Comparator.comparing(Team::getName)).map(t -> t.getName()).collect(Collectors.joining(";")) + ";rmse;iterations\n";
+        header += teams.stream().map(t -> "0").collect(Collectors.joining(";")) + ";0;0\n";
 
         BlobInfo blobInfo = storage.create(
                 BlobInfo

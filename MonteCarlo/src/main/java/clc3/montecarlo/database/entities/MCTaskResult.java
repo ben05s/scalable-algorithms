@@ -17,6 +17,8 @@ public class MCTaskResult {
     @Index
     Key<MCTask> mcTask;
     List<TeamSimulationResult> teamResults;
+    double promotionRMSE;
+    double relegationRMSE;
     int calculatedIterations;
     List<Long> computeTimes;
 
@@ -51,6 +53,22 @@ public class MCTaskResult {
         this.teamResults = teamResults;
     }
 
+    public double getPromotionRMSE() {
+        return promotionRMSE;
+    }
+
+    public void setPromotionRMSE(double promotionRMSE) {
+        this.promotionRMSE = promotionRMSE;
+    }
+
+    public double getRelegationRMSE() {
+        return relegationRMSE;
+    }
+
+    public void setRelegationRMSE(double relegationRMSE) {
+        this.relegationRMSE = relegationRMSE;
+    }
+    
     public int getCalculatedIterations() {
         return calculatedIterations;
     }
