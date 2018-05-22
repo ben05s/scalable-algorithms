@@ -19,12 +19,22 @@ public class MCSettings {
     private int lineupStrategy;
     private String optimizeLineupTeamName;
 
+    private String seasonFileName;
+
     @Ignore private String fileSeasonToSimulateContent;
     @Ignore private String fileHistoricGamesContent;
 
     private ChessPredictionModel predictionModel;
     private List<MCTeam> teams;
     private Map<String, List<MCHeadToHeadMatch>> roundGameResults;
+
+    public String getSeasonFileName() {
+        return seasonFileName;
+    }
+
+    public void setSeasonFileName(String seasonFileName) {
+        this.seasonFileName = seasonFileName;
+    }
 
     public ChessPredictionModel getPredictionModel() {
         return predictionModel;

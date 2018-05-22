@@ -9,7 +9,7 @@
         "build-common": "npm run build --prefix ../Common",
         "build-montecarlo": "npm run build --prefix ../MonteCarlo",
         "build-tsp": "npm run build --prefix ../TravellingSalesmanProblem",
-        "deploy": "npm run install-pgnparser && npm run install-simulation && npm run build-common && npm run build-montecarlo && mvn appengine:deploy"
+        "deploy": "npm run install-pgnparser && npm run install-simulation && npm run build && npm run build-common && npm run build-montecarlo && mvn appengine:deploy"
     },
     "private": true,
     "dependencies": {}

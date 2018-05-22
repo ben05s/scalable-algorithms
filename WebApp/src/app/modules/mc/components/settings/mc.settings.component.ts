@@ -40,16 +40,17 @@ export class McSettingsComponent {
 
   uploadLeaguePgn(file: PickedFile): void {
     if(!file) return;
+    this.settings.name = file.name.replace(".pgn", "");
     this.isLoading = true;
     this._tasksService.uploadPgnFile(file.name, file.content).subscribe(league => {
       this.isLoading = false;
       this.league = league;
-      if(!this.settings.name) this.settings.name = league.leagueName;
     });
   }
 
   addTask(): void {
     this.settings.mcSettings.fileSeasonToSimulateContent = this.file.content;
+    this.settings.mcSettings.seasonFileName = this.file.name.replace(".pgn", "");
     if(this.fileH) this.settings.mcSettings.fileHistoricGamesContent = this.fileH.content;
     this._tasksService.addTask(this.settings).subscribe(task => {
       this.dialogRef.close(task);

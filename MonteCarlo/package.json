@@ -6,7 +6,7 @@
         "install-simulation": "mvn install:install-file -Dfile=lib/league-montecarlo-simulation-1.0.jar -DgroupId=at.fh-hagenberg.clc3 -DartifactId=league-montecarlo-simulation -Dversion=1.0 -Dpackaging=jar",
         "build": "mvn clean install -Pdependency",
         "build-common": "npm run build --prefix ../Common",
-        "deploy": "npm run install-simulation && npm run build-common && mvn appengine:deploy"
+        "deploy": "npm run install-simulation && npm run build && npm run build-common && mvn appengine:deploy"
     },
     "private": true
 }

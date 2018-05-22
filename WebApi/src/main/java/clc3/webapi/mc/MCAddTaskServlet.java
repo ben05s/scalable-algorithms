@@ -10,9 +10,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.Acl.Role;
+import com.google.cloud.storage.Acl.User;
 
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
@@ -23,8 +27,11 @@ import at.hagenberg.master.montecarlo.exceptions.PgnParserException;
 import at.hagenberg.master.montecarlo.prediction.ChessPredictionModel;
 import at.hagenberg.master.montecarlo.simulation.HeadToHeadMatch;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -35,7 +42,6 @@ public class MCAddTaskServlet extends BaseServlet {
     
     private static Storage storage = null;
 
-    // [START init]
     static {
       storage = StorageOptions.getDefaultInstance().getService();
     }
@@ -54,8 +60,8 @@ public class MCAddTaskServlet extends BaseServlet {
 
         RandomGenerator randomGenerator = new Well19937c();
         ChessPredictionModel predictionModel = new ChessPredictionModel(settings.isUseEloRating(), settings.isUseAdvWhite(), settings.isUseStrengthTrend(), settings.isUseStats(), settings.isUseRegularization());
-
-        BlobId blobId = BlobId.of("clc3-project-benjamin.appspot.com", "historicData.pgn");
+        predictionModel.statsFactor = 2;
+        BlobId blobId = BlobId.of("clc3-project-benjamin.appspot.com", "historicData" + settings.getSeasonFileName() + ".pgn");
         byte[] content = storage.readAllBytes(blobId);
         String historicDataContent = new String(content, UTF_8);
 
@@ -101,7 +107,30 @@ public class MCAddTaskServlet extends BaseServlet {
         mc.setQueueTaskNames(new ArrayList<String>());
 
         taskDao.save(mc);
+
+        // create iteration results file
+        String bucketName = "clc3-project-benjamin.appspot.com";
+        String fileName = "simulation-results-promotion-" + mc.getName() + ".csv";
+        String fileName2 = "simulation-results-relegation-" + mc.getName() + ".csv";
+        String header = teams.stream().sorted(Comparator.comparing(Team::getName)).map(t -> t.getName()).collect(Collectors.joining(";")) + ";iterations\n";
+        header += teams.stream().map(t -> "0").collect(Collectors.joining(";")) + ";0\n";
+
+        BlobInfo blobInfo = storage.create(
+                BlobInfo
+                    .newBuilder(bucketName, fileName)
+                    // Modify access list to allow all users with link to read file
+                    .setAcl(new ArrayList<>(Arrays.asList(Acl.of(User.ofAllUsers(), Role.READER))))
+                    .build(),
+                    new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)));
         
+        BlobInfo blobInfo2 = storage.create(
+            BlobInfo
+                .newBuilder(bucketName, fileName2)
+                // Modify access list to allow all users with link to read file
+                .setAcl(new ArrayList<>(Arrays.asList(Acl.of(User.ofAllUsers(), Role.READER))))
+                .build(),
+                new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)));
+
         jsonResponse(response, new MCTaskResponse(mc));
     }
 }

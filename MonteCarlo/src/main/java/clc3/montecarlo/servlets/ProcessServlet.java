@@ -11,11 +11,19 @@ import clc3.montecarlo.database.entities.MCTaskResult;
 import clc3.montecarlo.database.entities.MCTeam;
 import clc3.montecarlo.database.enums.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.cloud.storage.*;
+import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.Acl.Role;
+import com.google.cloud.storage.Acl.User;
 
 import com.googlecode.objectify.Key;
 
@@ -25,14 +33,14 @@ import org.apache.commons.math3.random.Well19937c;
 import at.hagenberg.master.montecarlo.parser.PgnAnalysis;
 import at.hagenberg.master.montecarlo.entities.*;
 import at.hagenberg.master.montecarlo.entities.enums.GameResult;
-import at.hagenberg.master.montecarlo.entities.enums.LineupStrategy;
 import at.hagenberg.master.montecarlo.simulation.ChessLeagueSimulation;
 import at.hagenberg.master.montecarlo.prediction.ChessPredictionModel;
 import at.hagenberg.master.montecarlo.simulation.HeadToHeadMatch;
-import at.hagenberg.master.montecarlo.lineup.LineupSelector;
+import at.hagenberg.master.montecarlo.lineup.RandomSelection;
 import at.hagenberg.master.montecarlo.simulation.settings.LeagueSettings;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @WebServlet(urlPatterns = "/process")
 public class ProcessServlet extends BaseServlet {
@@ -40,6 +48,12 @@ public class ProcessServlet extends BaseServlet {
     private MCTaskDao taskDao = serviceLocator.getMcTaskDao();
     private MCTaskIterationDao taskIterationDao = serviceLocator.getMcTaskIterationDao();
     private MCTaskResultDao taskResultDao = serviceLocator.getMcTaskResultDao();
+    
+    private static Storage storage = null;
+
+    static {
+        storage = StorageOptions.getDefaultInstance().getService();
+    }
 
     @Override
     protected void process(HttpServletRequest request, HttpServletResponse response)
@@ -62,7 +76,6 @@ public class ProcessServlet extends BaseServlet {
             final int gamesPerMatch = mcSettings.getGamesPerMatch();
             final int roundsPerSeason = mcSettings.getRoundsPerSeason();
             final int roundsToSimulate = mcSettings.getRoundsToSimulate();
-            LineupSelector lineupSelector = new LineupSelector(LineupStrategy.valueOf(mcSettings.getLineupStrategy()), gamesPerMatch);
             
             ChessPredictionModel predictionModel = mcSettings.getPredictionModel();
             
@@ -95,7 +108,7 @@ public class ProcessServlet extends BaseServlet {
                 roundGameResults.put(new Integer(entry.getKey()), list);
             }
 
-            LeagueSettings<Team> settings = new LeagueSettings(predictionModel, teamList, roundsPerSeason, lineupSelector, roundsToSimulate, roundGameResults);
+            LeagueSettings<Team> settings = new LeagueSettings<Team>(predictionModel, teamList, roundsPerSeason, new RandomSelection(randomGenerator, gamesPerMatch, true), roundsToSimulate, roundGameResults);
             
             ChessLeagueSimulation simulation = new ChessLeagueSimulation(randomGenerator, settings);
             for(Long i = iterationStart; i < iterationEnd; i++) {
@@ -124,7 +137,7 @@ public class ProcessServlet extends BaseServlet {
         mcIteration.setIteration(currentIteration);
         mcIteration.setMcTask(taskKey);
         mcIteration.setSeasonResult(new MCSeasonResult(result));
-        taskIterationDao.save(mcIteration);
+        // taskIterationDao.save(mcIteration); not necessary and saves costs
         return mcIteration;
     }
 
@@ -173,7 +186,7 @@ public class ProcessServlet extends BaseServlet {
             }
         }
         List<TeamSimulationResult> teamResults = new ArrayList<>(teamResultMap.values());
-    
+
         taskResult.setMcTask(taskKey);
         taskResult.setTeamResults(teamResults);
         taskResult.setCacluatedIterations(totalIterations);

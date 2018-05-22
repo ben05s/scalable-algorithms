@@ -10,6 +10,8 @@ export class McSettings {
     lineupStrategy: number;
     optimizeLineupTeamName: string;
 
+    seasonFileName: string;
+
     fileSeasonToSimulateContent: string;
     fileHistoricGamesContent: string;
 
@@ -24,6 +26,7 @@ export class McSettings {
         this.useRegularization = false;
         this.lineupStrategy = 4;
         this.optimizeLineupTeamName = "";
+        this.seasonFileName = "";
         this.fileSeasonToSimulateContent = "";
         this.fileHistoricGamesContent = "";
     }

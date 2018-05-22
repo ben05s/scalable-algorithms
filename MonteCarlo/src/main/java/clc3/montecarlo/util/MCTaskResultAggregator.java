@@ -1,16 +1,46 @@
 package clc3.montecarlo.util;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.Acl.Role;
+import com.google.cloud.storage.Acl.User;
+
+import at.hagenberg.master.montecarlo.entities.Team;
 import at.hagenberg.master.montecarlo.entities.TeamSimulationResult;
 import clc3.montecarlo.database.entities.MCTaskResult;
 
 public final class MCTaskResultAggregator {
 
-    public static MCTaskResult aggregateTaskResults(List<MCTaskResult> taskResults) {
+    private static Storage storage = null;
+
+    static {
+      storage = StorageOptions.getDefaultInstance().getService();
+    }
+    
+    public static MCTaskResult aggregateTaskResults(String seasonFileName, List<MCTaskResult> taskResults) {
         MCTaskResult aggregatedTaskResult = new MCTaskResult();
         int calculatedIterations = 0;
         List<Long> computeTimes = new ArrayList<>();
+
+        String bucketName = "clc3-project-benjamin.appspot.com";
+        String promotionFileName = "simulation-results-promotion-" + seasonFileName + ".csv";
+        BlobId blobId = BlobId.of(bucketName, promotionFileName);
+        byte[] content = storage.readAllBytes(blobId);
+        String contentPromotion = new String(content, StandardCharsets.UTF_8);
+
+        String relegationFileName = "simulation-results-relegation-" + seasonFileName + ".csv";
+        blobId = BlobId.of(bucketName, relegationFileName);
+        content = storage.readAllBytes(blobId);
+        String contentRelegation = new String(content, StandardCharsets.UTF_8);
 
         Map<String, TeamSimulationResult> aggregatedTeamResults = new HashMap<>();    
         Iterator<MCTaskResult> taskResultIt = taskResults.iterator();
@@ -30,7 +60,26 @@ public final class MCTaskResultAggregator {
             }
             
             computeTimes.addAll(taskResult.getComputeTimes());
+
+            contentPromotion += aggregatedTeamResults.values().stream().sorted(Comparator.comparing(TeamSimulationResult::getTeamName)).map(ts -> String.format("%.4f", ts.getRatioPromotion()).replace(".", ",")).collect(Collectors.joining(";")) + ";" + calculatedIterations + "\n";
+            contentRelegation += aggregatedTeamResults.values().stream().sorted(Comparator.comparing(TeamSimulationResult::getTeamName)).map(ts -> String.format("%.4f", ts.getRatioRelegation()).replace(".", ",")).collect(Collectors.joining(";")) + ";" + calculatedIterations + "\n";
         }
+
+        BlobInfo blobInfo = storage.create(
+                BlobInfo
+                    .newBuilder(bucketName, promotionFileName)
+                    // Modify access list to allow all users with link to read file
+                    .setAcl(new ArrayList<>(Arrays.asList(Acl.of(User.ofAllUsers(), Role.READER))))
+                    .build(),
+                    new ByteArrayInputStream(contentPromotion.getBytes(StandardCharsets.UTF_8)));
+        
+        BlobInfo blobInfo2 = storage.create(
+            BlobInfo
+                .newBuilder(bucketName, relegationFileName)
+                // Modify access list to allow all users with link to read file
+                .setAcl(new ArrayList<>(Arrays.asList(Acl.of(User.ofAllUsers(), Role.READER))))
+                .build(),
+                new ByteArrayInputStream(contentRelegation.getBytes(StandardCharsets.UTF_8)));
 
         List<TeamSimulationResult> sortedTeamResult = new ArrayList<>(aggregatedTeamResults.values());
         Collections.sort(sortedTeamResult);

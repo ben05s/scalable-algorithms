@@ -37,7 +37,7 @@ public class MCTaskResultServlet extends BaseServlet {
         if(taskResults.size() > 1){
             taskResultDao.deleteBulk(taskResults);
 
-            aggregatedTaskResult = MCTaskResultAggregator.aggregateTaskResults(taskResults);
+            aggregatedTaskResult = MCTaskResultAggregator.aggregateTaskResults(task.getName(), taskResults);
             aggregatedTaskResult.setMcTask(task.getKey());
             taskResultDao.save(aggregatedTaskResult);
         } else if(taskResults.size() == 1) {
