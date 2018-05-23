@@ -26,13 +26,13 @@ export class McSettingsComponent {
   task: McTask;
 
   lineupStrategies = [
-    {value: 'Avoid Strong Opponents', id: 1},
-    {value: 'Match Strong Opponents', id: 2},
-    {value: 'White/Black Performance', id: 3},
-    {value: 'Descending Rating Strength', id: 4},
-    {value: 'Ascending Rating Strength', id: 5},
-    {value: 'Random', id: 6},
-    {value: 'Traditional', id: 7}
+    {value: 'Descending Rating Strength', id: 1},
+    {value: 'Ascending Rating Strength', id: 2},
+    {value: 'Random', id: 3}
+    //{value: 'Traditional', id: 7}
+    //{value: 'Avoid Strong Opponents', id: 1}
+    //{value: 'Match Strong Opponents', id: 2}
+    //{value: 'White/Black Performance', id: 3}
   ];
 
   constructor(public dialogRef: MatDialogRef<McSettingsComponent>,

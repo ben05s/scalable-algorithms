@@ -73,19 +73,19 @@
     <br/>
     <h3 mat-dialog-title>Lineup Settings</h3>
     <div>
+        <mat-select [(ngModel)]="settings.mcSettings.optimizeLineupTeamName" placeholder="Optimized Lineup For Team" class="spacer-big">
+            <mat-option *ngFor="let team of league.teams" [value]="team.name">
+                {{team.name}}
+            </mat-option>
+        </mat-select>
         <mat-select [(ngModel)] = "settings.mcSettings.lineupStrategy" placeholder="Lineup Strategy" class="spacer-big">
             <mat-option *ngFor="let model of lineupStrategies" [value]="model.id">
                 {{model.value}}
-            </mat-option>
-        </mat-select>
-        <mat-select *ngIf="settings.mcSettings.lineupStrategy == 1" [(ngModel)]="settings.mcSettings.optimizeLineupTeamName" placeholder="Optimized Lineup For Team" class="spacer-big">
-            <mat-option *ngFor="let team of league.teams" [value]="team.name">
-                {{team.name}}
             </mat-option>
         </mat-select>
     </div>
 </div>
 <div mat-dialog-actions>
     <button mat-button (click)="closeDialog()">Cancel</button>
-    <button mat-button [disabled]="!settings.isReady() || !file" (click)="addTask()" cdkFocusInitial>Add Task</button>
+    <button mat-button [disabled]="!settings.isReady() && !file" (click)="addTask()" cdkFocusInitial>Add Task</button>
 </div>

@@ -33,11 +33,15 @@ import org.apache.commons.math3.random.Well19937c;
 import at.hagenberg.master.montecarlo.parser.PgnAnalysis;
 import at.hagenberg.master.montecarlo.entities.*;
 import at.hagenberg.master.montecarlo.entities.enums.GameResult;
+import at.hagenberg.master.montecarlo.entities.enums.LineupStrategy;
 import at.hagenberg.master.montecarlo.simulation.ChessLeagueSimulation;
 import at.hagenberg.master.montecarlo.prediction.ChessPredictionModel;
 import at.hagenberg.master.montecarlo.simulation.HeadToHeadMatch;
+import at.hagenberg.master.montecarlo.lineup.AbstractLineupSelector;
+import at.hagenberg.master.montecarlo.lineup.LineupSelector;
+import at.hagenberg.master.montecarlo.lineup.OptimizedLineup;
 import at.hagenberg.master.montecarlo.lineup.RandomSelection;
-import at.hagenberg.master.montecarlo.simulation.settings.LeagueSettings;
+import at.hagenberg.master.montecarlo.simulation.LeagueSettings;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -107,8 +111,13 @@ public class ProcessServlet extends BaseServlet {
                 }
                 roundGameResults.put(new Integer(entry.getKey()), list);
             }
+            AbstractLineupSelector lineupSelector = new RandomSelection(randomGenerator, gamesPerMatch, true);
+            OptimizedLineup optimizedLineup = null;
+            if(task.getMCSettings().getOptimizeLineupTeamName() != null && !task.getMCSettings().getOptimizeLineupTeamName().isEmpty()) {
+                optimizedLineup = new OptimizedLineup(task.getMCSettings().getOptimizeLineupTeamName(), LineupStrategy.getLineupSelector(task.getMCSettings().getLineupStrategy(), randomGenerator, gamesPerMatch));
+            }
 
-            LeagueSettings<Team> settings = new LeagueSettings<Team>(predictionModel, teamList, roundsPerSeason, new RandomSelection(randomGenerator, gamesPerMatch, true), roundsToSimulate, roundGameResults);
+            LeagueSettings<Team> settings = new LeagueSettings<Team>(predictionModel, teamList, roundsPerSeason, lineupSelector, optimizedLineup, roundsToSimulate, roundGameResults);
             
             // create actual season result - to measure the error
             List<String> actualTeamResult = new ArrayList<>();
@@ -116,13 +125,11 @@ public class ProcessServlet extends BaseServlet {
             ChessLeagueSimulation pseudo = new ChessLeagueSimulation(randomGenerator, settings);
             SeasonResult actualResult = pseudo.runSimulation();
             actualTeamResult.addAll(actualResult.getTeamSeasonScoreMap().keySet());
-            actualTeamResult.forEach(s -> System.out.println(s));
 
             settings.setRoundsToSimulate(roundsToSimulate);
             ChessLeagueSimulation simulation = new ChessLeagueSimulation(randomGenerator, settings, actualTeamResult);
             for(Long i = iterationStart; i < iterationEnd; i++) {
                 SeasonResult result = simulation.runSimulation();
-                result.getTeamSeasonScoreMap().entrySet().forEach(s -> System.out.println(s));
                 MCTaskIteration mcIteration = saveIteration(i.intValue(), result, task.getKey());
                 iterations.add(mcIteration);
             }

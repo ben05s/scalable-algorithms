@@ -24,13 +24,13 @@ export class McSettings {
         this.useStrengthTrend = false;
         this.useStats = false;
         this.useRegularization = false;
-        this.lineupStrategy = 4;
+        this.lineupStrategy = 0;
         this.optimizeLineupTeamName = "";
         this.seasonFileName = "";
         this.fileSeasonToSimulateContent = "";
         this.fileHistoricGamesContent = "";
     }
     isComplete() {
-        return this.lineupStrategy != 0;
+        return (this.lineupStrategy == 0) || (this.lineupStrategy != 0 && this.optimizeLineupTeamName != "");
     }
 }
