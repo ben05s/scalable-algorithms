@@ -1,4 +1,7 @@
-<h1 mat-dialog-title>New League Simulation</h1>
+<h1 mat-dialog-title>
+    New League Simulation
+</h1>
+<mat-spinner *ngIf="isLoading"></mat-spinner>
 <div mat-dialog-content class="settings-container">
     <mat-form-field>
         <input matInput placeholder="Simulation Name" [(ngModel)]="settings.name">
@@ -12,7 +15,6 @@
         </button>
     </div>
 
-    <mat-spinner *ngIf="isLoading"></mat-spinner>
     <div class="spacer-button">
         <mat-accordion *ngIf="league.teams">
             <mat-expansion-panel>

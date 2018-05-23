@@ -49,10 +49,13 @@ export class McSettingsComponent {
   }
 
   addTask(): void {
+    this.isLoading = true;
     this.settings.mcSettings.fileSeasonToSimulateContent = this.file.content;
     this.settings.mcSettings.seasonFileName = this.file.name.replace(".pgn", "");
     if(this.fileH) this.settings.mcSettings.fileHistoricGamesContent = this.fileH.content;
+    
     this._tasksService.addTask(this.settings).subscribe(task => {
+      this.isLoading = false;
       this.dialogRef.close(task);
     });
   }
