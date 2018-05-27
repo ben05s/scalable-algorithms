@@ -45,7 +45,7 @@ public final class MCTaskResultAggregator {
 
         Map<String, TeamSimulationResult> aggregatedTeamResults = new HashMap<>();    
         Iterator<MCTaskResult> taskResultIt = taskResults.iterator();
-        int count = 0;
+        double count = 0.0;
         while(taskResultIt.hasNext()) {
             MCTaskResult taskResult = taskResultIt.next();
             for(TeamSimulationResult teamResult: taskResult.getTeamResults()) {
@@ -62,18 +62,15 @@ public final class MCTaskResultAggregator {
             }
             
             computeTimes.addAll(taskResult.getComputeTimes());
-
-            if(count == 0) {
-                promotionRMSE = taskResult.getPromotionRMSE();
-                relegationRMSE = taskResult.getRelegationRMSE();
-            } else {
-                promotionRMSE = (promotionRMSE + taskResult.getPromotionRMSE()) / 2.0;
-                relegationRMSE = (relegationRMSE + taskResult.getRelegationRMSE()) / 2.0;
-            }
-
-            contentPromotion += aggregatedTeamResults.values().stream().sorted(Comparator.comparing(TeamSimulationResult::getTeamName)).map(ts -> String.format("%.4f", ts.getRatioPromotion()).replace(".", ",")).collect(Collectors.joining(";")) + ";" + String.format("%.4f", promotionRMSE).replace(".", ",") + ";" + calculatedIterations + "\n";
-            contentRelegation += aggregatedTeamResults.values().stream().sorted(Comparator.comparing(TeamSimulationResult::getTeamName)).map(ts -> String.format("%.4f", ts.getRatioRelegation()).replace(".", ",")).collect(Collectors.joining(";")) + ";" + String.format("%.4f", relegationRMSE).replace(".", ",") + ";" + calculatedIterations + "\n";
+            
             count++;
+            promotionRMSE += taskResult.getPromotionRMSE();
+            relegationRMSE += taskResult.getRelegationRMSE();
+
+            contentPromotion += aggregatedTeamResults.values().stream().sorted(Comparator.comparing(TeamSimulationResult::getTeamName)).map(ts -> 
+                String.format("%.4f", ts.getRatioPromotion()).replace(".", ",")).collect(Collectors.joining(";")) + ";" + String.format("%.4f", promotionRMSE / count).replace(".", ",") + ";" + calculatedIterations + "\n";
+            contentRelegation += aggregatedTeamResults.values().stream().sorted(Comparator.comparing(TeamSimulationResult::getTeamName)).map(ts -> 
+                String.format("%.4f", ts.getRatioRelegation()).replace(".", ",")).collect(Collectors.joining(";")) + ";" + String.format("%.4f", relegationRMSE / count).replace(".", ",") + ";" + calculatedIterations + "\n";
         }
 
         BlobInfo blobInfo = storage.create(
@@ -96,8 +93,8 @@ public final class MCTaskResultAggregator {
         Collections.sort(sortedTeamResult);
 
         aggregatedTaskResult.setTeamResults(sortedTeamResult);
-        aggregatedTaskResult.setPromotionRMSE(promotionRMSE);
-        aggregatedTaskResult.setRelegationRMSE(relegationRMSE);
+        aggregatedTaskResult.setPromotionRMSE(promotionRMSE / count);
+        aggregatedTaskResult.setRelegationRMSE(relegationRMSE / count);
         aggregatedTaskResult.setCacluatedIterations(calculatedIterations);
         aggregatedTaskResult.setComputeTimes(computeTimes);
         return aggregatedTaskResult;

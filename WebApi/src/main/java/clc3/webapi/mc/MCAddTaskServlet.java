@@ -60,7 +60,14 @@ public class MCAddTaskServlet extends BaseServlet {
 
         RandomGenerator randomGenerator = new Well19937c();
         ChessPredictionModel predictionModel = new ChessPredictionModel(settings.isUseEloRating(), settings.isUseAdvWhite(), settings.isUseStrengthTrend(), settings.isUseStats(), settings.isUseRegularization());
+        // 2nd Bundesliga Prediction Model
         predictionModel.statsFactor = 2;
+        predictionModel.drawInfluence = 620;
+
+        // 1st Bundesliga Prediction Model
+        // predictionModel.statsFactor = 3;
+        // predictionModel.drawInfluence = 600;
+
         BlobId blobId = BlobId.of("clc3-project-benjamin.appspot.com", "historicData" + settings.getSeasonFileName() + ".pgn");
         byte[] content = storage.readAllBytes(blobId);
         String historicDataContent = new String(content, UTF_8);

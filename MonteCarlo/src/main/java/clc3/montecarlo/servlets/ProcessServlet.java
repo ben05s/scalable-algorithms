@@ -82,7 +82,7 @@ public class ProcessServlet extends BaseServlet {
             final int roundsToSimulate = mcSettings.getRoundsToSimulate();
             
             ChessPredictionModel predictionModel = mcSettings.getPredictionModel();
-            
+            System.out.println("draw influence: " + predictionModel.drawInfluence + ", stats factor: " + predictionModel.statsFactor);
             List<Team> teamList = new ArrayList<>();
             for(int i=0; i < task.getTeams().size(); i++) {
                 MCTeam mcTeam = task.getTeams().get(i);
