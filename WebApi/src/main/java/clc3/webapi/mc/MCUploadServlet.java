@@ -14,6 +14,7 @@ import org.apache.log4j.Level;
 
 import at.hagenberg.master.montecarlo.entities.Player;
 import at.hagenberg.master.montecarlo.entities.Team;
+import at.hagenberg.master.montecarlo.util.PgnUtil;
 
 import java.io.StringReader;
 
@@ -48,6 +49,7 @@ public class MCUploadServlet extends BaseServlet {
 
         for (int i = 0; i < games.getGame().size(); i++) {
             Game game = games.getGame().get(i);
+            if(PgnUtil.isInvalidGame(game)) continue;
             
             resp.setLeagueName(game.getEvent());
 
