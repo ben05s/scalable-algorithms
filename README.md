@@ -1,1 +1,4 @@
-# Google Cloud Application to carry out various algorithms with high demand for scalability
+# Google Cloud Application 
+Carry out various algorithms with high demand for scalability
+Traveling Salesman Problem
+Monte Carlo Simulation of Chess Leagues
